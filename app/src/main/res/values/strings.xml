@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Android_Libs</string>
+    <string name="text_values">Ooooo</string>>
+    <string name="button_name1">Go</string>>
+    <string name="sub_activity">Sub Activity</string>
+    <string name="hint">Name</string>>
+</resources>
