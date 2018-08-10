@@ -8,10 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Raised Button -->
     <style name="AppTheme.RaisedButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">#FFD464</item>
         <item name="colorButtonNormal">#FBA848</item>
         <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <!-- Flat Button -->
+    <style name="AppTheme.FlatButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">#FFD464</item>
+        <item name="android:textColor">#FBA848</item>
     </style>
 
 </resources>
