@@ -1,6 +1,7 @@
 package com.takashi.android_libs
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -8,24 +9,20 @@ import android.view.MenuItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.takashi.android_libs.utils.MyAdapter
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_sub.*
 import android.widget.Toast
-import com.google.firebase.auth.AuthResult
-import com.google.android.gms.tasks.Task
-import android.support.annotation.NonNull
-import com.google.android.gms.tasks.OnCompleteListener
-import android.R.attr.password
-import android.support.v4.app.FragmentActivity
 import android.util.Log
-import android.R.attr.password
-
-
+import com.takashi.android_libs.utils.ImageConverter
+import com.takashi.android_libs.utils.RetrofitServiceGenerator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import okhttp3.OkHttpClient
 
 
 class SubActivity : AppCompatActivity() {
     val list = ArrayList<String>()
     val mAuth by lazy { FirebaseAuth.getInstance() }
+    val service by lazy { RetrofitServiceGenerator.createService() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +32,8 @@ class SubActivity : AppCompatActivity() {
         supportActionBar?.setTitle(R.string.sub_activity)
 
         initViews()
+
+
     }
 
     override fun onStart() {
@@ -118,13 +117,27 @@ class SubActivity : AppCompatActivity() {
         recycler_view.adapter = MyAdapter(list)
 
         button2.setOnClickListener{
-            signUp("tktktks@gmail.com", "tyujmko1013")
+
             //list.add("OooooO")
             //recycler_view.adapter?.notifyDataSetChanged()
+            service.apiDemo()
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe{ user ->
+                        run {
+                            val a = user
+                        }
+                    }
+
+            val res = this@SubActivity.resources
+            val image = BitmapFactory.decodeResource(res, R.drawable.fig5)
+            image?.let {
+                val encodedImage = ImageConverter.convertToBase64(image)
+                Log.d("Uooo", encodedImage)
+            }
         }
-
-
     }
+
 
     fun initList(size: Int): ArrayList<String>{
         for (i in 1..size){
