@@ -16,9 +16,5 @@
     </style>
 
     <!-- Flat Button -->
-    <style name="AppTheme.FlatButton" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">#FFD464</item>
-        <item name="android:textColor">#FBA848</item>
-    </style>
 
 </resources>
