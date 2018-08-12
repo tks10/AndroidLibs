@@ -13,8 +13,13 @@ import kotlinx.android.synthetic.main.activity_sub.*
 import android.widget.Toast
 import android.util.Log
 import com.takashi.android_libs.utils.ImageConverter
+import com.takashi.android_libs.utils.RandomUserDemo
 import com.takashi.android_libs.utils.RetrofitServiceGenerator
+import io.reactivex.Observer
+import io.reactivex.Single
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 
@@ -123,17 +128,22 @@ class SubActivity : AppCompatActivity() {
             service.apiDemo()
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe{ user ->
-                        run {
-                            val a = user
+                    .subscribe( object: DisposableSingleObserver<RandomUserDemo>(){
+                        override fun onSuccess(t: RandomUserDemo) {
+                            Log.d("Uooooo", t.results[0].email)
                         }
-                    }
+
+                        override fun onError(e: Throwable) {
+                            Log.e("Uooooo", e.toString())
+                        }
+                    })
 
             val res = this@SubActivity.resources
-            val image = BitmapFactory.decodeResource(res, R.drawable.fig5)
-            image?.let {
-                val encodedImage = ImageConverter.convertToBase64(image)
-                Log.d("Uooo", encodedImage)
+            val imageOriginal = BitmapFactory.decodeResource(res, R.drawable.fig5)
+            val base64 = ImageConverter.convertToBase64(imageOriginal)
+            val image = ImageConverter.convertToBitmap(base64)
+            image.let {
+                imageView.setImageBitmap(it)
             }
         }
     }
