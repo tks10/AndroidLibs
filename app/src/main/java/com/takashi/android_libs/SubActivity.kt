@@ -14,20 +14,15 @@ import android.widget.Toast
 import android.util.Log
 import com.takashi.android_libs.utils.ImageConverter
 import com.takashi.android_libs.utils.RandomUserDemo
-import com.takashi.android_libs.utils.RetrofitServiceGenerator
-import io.reactivex.Observer
-import io.reactivex.Single
-import io.reactivex.SingleObserver
+import com.takashi.android_libs.utils.Api
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
-import okhttp3.OkHttpClient
 
 
 class SubActivity : AppCompatActivity() {
     val list = ArrayList<String>()
     val mAuth by lazy { FirebaseAuth.getInstance() }
-    val service by lazy { RetrofitServiceGenerator.createService() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +120,7 @@ class SubActivity : AppCompatActivity() {
 
             //list.add("OooooO")
             //recycler_view.adapter?.notifyDataSetChanged()
-            service.apiDemo()
+            Api.getService().apiDemo()
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe( object: DisposableSingleObserver<RandomUserDemo>(){

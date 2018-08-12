@@ -7,9 +7,13 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class RetrofitServiceGenerator {
+class Api {
     companion object {
-        fun createService(): IApiService {
+        private val apiService: ApiService by lazy { createService() }
+
+        fun getService(): ApiService = apiService
+
+        fun createService(): ApiService {
             val apiUrl = "https://randomuser.me/"
             val client = builderHttpClient() // OkHttpClient に logging の設定を追加
             val retrofit = Retrofit.Builder()
@@ -18,7 +22,7 @@ class RetrofitServiceGenerator {
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(client)
                     .build()
-            return retrofit.create(IApiService::class.java)
+            return retrofit.create(ApiService::class.java)
         }
 
         private fun builderHttpClient(): OkHttpClient {

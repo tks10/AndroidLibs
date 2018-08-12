@@ -4,6 +4,10 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.Toast
+import com.twitter.sdk.android.core.TwitterCore
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,11 +18,22 @@ class MainActivity : AppCompatActivity() {
         setUpViews()
     }
 
-
     fun setUpViews(){
         button.setOnClickListener {
             val intent = Intent(this, SubActivity::class.java)
             startActivity(intent)
+        }
+
+        loginButton.setOnClickListener{
+            if (TwitterCore.getInstance().sessionManager.activeSession == null) {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            } else {
+                val toast = Toast.makeText(this@MainActivity, "Already signed in", Toast.LENGTH_LONG)
+                toast.show()
+                val token = TwitterCore.getInstance().sessionManager.activeSession.authToken
+
+            }
         }
     }
 
