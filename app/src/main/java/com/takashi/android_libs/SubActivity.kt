@@ -8,16 +8,16 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.takashi.android_libs.utils.MyAdapter
 import kotlinx.android.synthetic.main.activity_sub.*
 import android.widget.Toast
 import android.util.Log
-import com.takashi.android_libs.utils.ImageConverter
-import com.takashi.android_libs.utils.RandomUserDemo
-import com.takashi.android_libs.utils.Api
+import com.takashi.android_libs.usecase.ApiManager
+import com.takashi.android_libs.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 
 class SubActivity : AppCompatActivity() {
@@ -39,8 +39,15 @@ class SubActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+        EventBus.getDefault().register(this)
+
         val currentUser: FirebaseUser? = mAuth.currentUser
         updateUI(currentUser)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     fun signUp(email: String, password: String){
@@ -110,6 +117,22 @@ class SubActivity : AppCompatActivity() {
         return false
     }
 
+    @Subscribe
+    fun onEvent(t: RandomUserDemo){
+        Log.e("Uooooo", t.results[0].email)
+        Toast.makeText(this, "EventBus!", Toast.LENGTH_SHORT).show()
+    }
+
+    @Subscribe
+    fun onEvent(token: Token){
+        Log.d("DUMMY", token.token)
+    }
+
+    @Subscribe
+    fun onEvent(user: MyUser){
+        Log.d("DUMMY", user.toString())
+    }
+
     fun initViews(){
 
         initList(2)
@@ -120,25 +143,14 @@ class SubActivity : AppCompatActivity() {
 
             //list.add("OooooO")
             //recycler_view.adapter?.notifyDataSetChanged()
-            Api.getService().apiDemo()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe( object: DisposableSingleObserver<RandomUserDemo>(){
-                        override fun onSuccess(t: RandomUserDemo) {
-                            Log.d("Uooooo", t.results[0].email)
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.e("Uooooo", e.toString())
-                        }
-                    })
+            ApiManager.dummy()
 
             val res = this@SubActivity.resources
             val imageOriginal = BitmapFactory.decodeResource(res, R.drawable.fig5)
             val base64 = ImageConverter.convertToBase64(imageOriginal)
             val image = ImageConverter.convertToBitmap(base64)
             image.let {
-                imageView.setImageBitmap(it)
+                //imageView.setImageBitmap(it)
             }
         }
     }

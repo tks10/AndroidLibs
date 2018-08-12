@@ -45,3 +45,8 @@ data class Result(val gender: String?,
                   val email: String?,
                   val phone: String?,
                   val cell: String?)
+
+data class Token(val token: String)
+
+data class MyUser(val email: String, val password: String)
+

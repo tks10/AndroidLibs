@@ -52,7 +52,11 @@ dependencies {
     //RxAndroid
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
+    //Twitter
     compile 'com.twitter.sdk.android:twitter-core:3.1.1'
+
+    //EventBus
+    compile 'org.greenrobot:eventbus:3.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
