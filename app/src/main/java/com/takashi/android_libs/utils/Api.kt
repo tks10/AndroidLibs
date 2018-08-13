@@ -14,7 +14,7 @@ class Api {
         fun getService(): ApiService = apiService
 
         fun createService(): ApiService {
-            val apiUrl = "https://10.0.2.2:8000/"
+            val apiUrl = "http://10.0.2.2:8000/"
             val client = builderHttpClient() // OkHttpClient に logging の設定を追加
             val retrofit = Retrofit.Builder()
                     .baseUrl(apiUrl)

@@ -1,5 +1,6 @@
 package com.takashi.android_libs
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
@@ -18,6 +19,8 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import retrofit2.Response
 
 
 class SubActivity : AppCompatActivity() {
@@ -117,21 +120,18 @@ class SubActivity : AppCompatActivity() {
         return false
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(t: RandomUserDemo){
         Log.e("Uooooo", t.results[0].email)
         Toast.makeText(this, "EventBus!", Toast.LENGTH_SHORT).show()
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(token: Token){
         Log.d("DUMMY", token.token)
     }
 
-    @Subscribe
-    fun onEvent(user: MyUser){
-        Log.d("DUMMY", user.toString())
-    }
+
 
     fun initViews(){
 
@@ -143,7 +143,55 @@ class SubActivity : AppCompatActivity() {
 
             //list.add("OooooO")
             //recycler_view.adapter?.notifyDataSetChanged()
-            ApiManager.dummy()
+            var token = getPreferences(Context.MODE_PRIVATE).let {
+                it.getString("TOKEN", "")
+            }
+
+            if (token == ""){
+                Api.getService().getUser(User("test@gmail.com", "testuser"))
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe( object: DisposableSingleObserver<Response<Token>>(){
+                            override fun onSuccess(response: Response<Token>) {
+                                if (response.isSuccessful){
+                                     token = getPreferences(Context.MODE_PRIVATE).let {
+                                         val editer = it.edit()
+                                         val t = response.body()!!.token
+                                         editer.putString("TOKEN", t)
+                                         editer.apply()
+                                         Log.d("TOKEN", "Stored Pref.")
+                                         Log.d("TOKEN", t)
+                                         t
+                                    }
+                                }
+                            }
+
+                            override fun onError(e: Throwable) {
+                                Log.e("Uooooo", e.toString())
+                            }
+                        })
+            } else {
+                Log.d("TOKEN", "Found in Pref.")
+                Log.d("TOKEN", token)
+            }
+
+            Api.getService().verifyToken(Token(token))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe( object: DisposableSingleObserver<Response<Token>>(){
+                        override fun onSuccess(response: Response<Token>) {
+                            if (response.isSuccessful){
+                                Log.d("TOKEN", "This token is valid.")
+                            } else {
+                                Log.e("TOKEN", "This token is invalid.")
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.e("Uooooo", e.toString())
+                        }
+                    })
+
 
             val res = this@SubActivity.resources
             val imageOriginal = BitmapFactory.decodeResource(res, R.drawable.fig5)

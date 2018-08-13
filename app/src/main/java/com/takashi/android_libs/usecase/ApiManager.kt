@@ -1,14 +1,12 @@
 package com.takashi.android_libs.usecase
 
 import android.util.Log
-import com.takashi.android_libs.utils.Api
-import com.takashi.android_libs.utils.MyUser
-import com.takashi.android_libs.utils.RandomUserDemo
-import com.takashi.android_libs.utils.Token
+import com.takashi.android_libs.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
+import retrofit2.Response
 
 class ApiManager{
     companion object {
@@ -43,11 +41,11 @@ class ApiManager{
         }
 
         fun getUser(email: String, password: String){
-            Api.getService().getUser(email, password)
+            Api.getService().getUser(User(email, password))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe( object: DisposableSingleObserver<MyUser>(){
-                        override fun onSuccess(user: MyUser) {
+                    .subscribe( object: DisposableSingleObserver<Response<Token>>(){
+                        override fun onSuccess(user: Response<Token>) {
                             EventBus.getDefault().post(user)
                         }
 
@@ -56,5 +54,22 @@ class ApiManager{
                         }
                     })
         }
+
+        fun refreshToken(token: String){
+            Api.getService().refreshToken(Token(token))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe( object: DisposableSingleObserver<Response<Token>>(){
+                        override fun onSuccess(user: Response<Token>) {
+                            EventBus.getDefault().post(user)
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.e("Uooooo", e.toString())
+                        }
+                    })
+        }
+
+
     }
 }
