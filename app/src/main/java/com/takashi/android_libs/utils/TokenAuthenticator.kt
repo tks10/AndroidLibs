@@ -19,7 +19,7 @@ class TokenAuthenticator : Authenticator {
         // refreshToken を利用して token を更新する
         val newToken = this.updateToken(refreshToken = refreshToken) ?: return null
 
-        return response.request().newBuilder().header("www-Authorization", "Bearer ${newToken}")?.build()
+        return response.request().newBuilder().header("Authorization", "JWT ${newToken}")?.build()
     }
 
     private fun updateToken(refreshToken: String): String? {

@@ -10,38 +10,10 @@ import retrofit2.Response
 
 class ApiManager{
     companion object {
-        fun getInformation(){
-            Api.getService().apiDemo()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe( object: DisposableSingleObserver<RandomUserDemo>(){
-                        override fun onSuccess(t: RandomUserDemo) {
-                            EventBus.getDefault().post(t)
-                        }
 
-                        override fun onError(e: Throwable) {
-                            Log.e("Uooooo", e.toString())
-                        }
-                    })
-        }
-
-        fun dummy(){
-            Api.getService().dummy()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe( object: DisposableSingleObserver<Token>(){
-                        override fun onSuccess(token: Token) {
-                            EventBus.getDefault().post(token)
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.e("Uooooo", e.toString())
-                        }
-                    })
-        }
 
         fun getUser(email: String, password: String){
-            Api.getService().getUser(User(email, password))
+            Api.getService().signIn(SignIn(email, password))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe( object: DisposableSingleObserver<Response<Token>>(){

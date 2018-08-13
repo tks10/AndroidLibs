@@ -18,7 +18,7 @@ class Api {
             val client = builderHttpClient() // OkHttpClient に logging の設定を追加
             val retrofit = Retrofit.Builder()
                     .baseUrl(apiUrl)
-                    .addConverterFactory(MoshiConverterFactory.create()) // Retrofit に gson を設定
+                    .addConverterFactory(MoshiConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(client)
                     .build()
@@ -27,6 +27,16 @@ class Api {
 
         private fun builderHttpClient(): OkHttpClient {
             val client = OkHttpClient.Builder()
+            client.addInterceptor { chain ->
+                val original = chain.request()
+                val request = with(original.newBuilder()){
+                    if (Token.get() != null){
+                        header("Authorization", "JWT ${Token.get()!!.token}")
+                    }
+                    method(original.method(), original.body())
+                }.build()
+                chain.proceed(request)
+            }
 
             if (BuildConfig.DEBUG) {
                 val logging = HttpLoggingInterceptor()

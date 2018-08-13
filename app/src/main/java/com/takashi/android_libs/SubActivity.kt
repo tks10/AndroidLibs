@@ -121,12 +121,6 @@ class SubActivity : AppCompatActivity() {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEvent(t: RandomUserDemo){
-        Log.e("Uooooo", t.results[0].email)
-        Toast.makeText(this, "EventBus!", Toast.LENGTH_SHORT).show()
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(token: Token){
         Log.d("DUMMY", token.token)
     }
@@ -141,56 +135,42 @@ class SubActivity : AppCompatActivity() {
 
         button2.setOnClickListener{
 
-            //list.add("OooooO")
-            //recycler_view.adapter?.notifyDataSetChanged()
-            var token = getPreferences(Context.MODE_PRIVATE).let {
-                it.getString("TOKEN", "")
-            }
 
-            if (token == ""){
-                Api.getService().getUser(User("test@gmail.com", "testuser"))
+//            var token = getPreferences(Context.MODE_PRIVATE).let {
+//                it.getString("TOKEN", "")
+//            }
+
+            if (Token.get() == null){
+                Api.getService().signIn(SignIn("test@gmail.com", "testuser"))
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe( object: DisposableSingleObserver<Response<Token>>(){
                             override fun onSuccess(response: Response<Token>) {
                                 if (response.isSuccessful){
-                                     token = getPreferences(Context.MODE_PRIVATE).let {
-                                         val editer = it.edit()
-                                         val t = response.body()!!.token
-                                         editer.putString("TOKEN", t)
-                                         editer.apply()
-                                         Log.d("TOKEN", "Stored Pref.")
-                                         Log.d("TOKEN", t)
-                                         t
-                                    }
+//                                     getPreferences(Context.MODE_PRIVATE).let {
+//                                         val editer = it.edit()
+//                                         val t = response.body()!!.token
+//                                         editer.putString("TOKEN", t)
+//                                         editer.apply()
+//                                         Log.d("TOKEN", "Stored Pref.")
+//                                         Log.d("TOKEN", t)
+//                                         t
+//                                    }
+                                    Token.put(response.body()!!)
+                                    Log.d("SignIn", "Signed In.")
+                                } else {
+                                    Token.delete()
+                                    Log.e("SignIn", "Failed Signing In.")
                                 }
                             }
 
                             override fun onError(e: Throwable) {
-                                Log.e("Uooooo", e.toString())
+                                Log.e("SignIn", e.toString())
                             }
                         })
             } else {
-                Log.d("TOKEN", "Found in Pref.")
-                Log.d("TOKEN", token)
+                Log.d("SignIn", "Already Signed In.")
             }
-
-            Api.getService().verifyToken(Token(token))
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe( object: DisposableSingleObserver<Response<Token>>(){
-                        override fun onSuccess(response: Response<Token>) {
-                            if (response.isSuccessful){
-                                Log.d("TOKEN", "This token is valid.")
-                            } else {
-                                Log.e("TOKEN", "This token is invalid.")
-                            }
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.e("Uooooo", e.toString())
-                        }
-                    })
 
 
             val res = this@SubActivity.resources
@@ -200,6 +180,27 @@ class SubActivity : AppCompatActivity() {
             image.let {
                 //imageView.setImageBitmap(it)
             }
+        }
+
+        button3.setOnClickListener {
+            Api.getService().sendMessage(MessageSender("string", "GUOOOO"))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe( object: DisposableSingleObserver<Response<Message>>(){
+                        override fun onSuccess(response: Response<Message>) {
+                            if (response.isSuccessful){
+                                val body = response.body()!!
+                                Log.d("GetUser", "Succeeded.")
+                                Log.d("GetUser", body.created_at)
+                            } else {
+                                Log.e("GetUser", "Failed")
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.e("GetUser", e.toString())
+                        }
+                    })
         }
     }
 
