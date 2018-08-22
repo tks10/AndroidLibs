@@ -11,7 +11,6 @@ import retrofit2.Response
 class ApiManager{
     companion object {
 
-
         fun getUser(email: String, password: String){
             Api.getService().signIn(SignIn(email, password))
                     .subscribeOn(Schedulers.newThread())

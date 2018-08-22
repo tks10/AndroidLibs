@@ -3,16 +3,28 @@ package com.takashi.android_libs
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.Toast
-import com.twitter.sdk.android.core.TwitterCore
-
+import com.twitter.sdk.android.core.*
 
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val CONSUMER_KEY = "H6NT0hh2n4rFJK1TNGjU6Q"
+        val CONSUMER_SECRET = "XgmyI4vkNpv17eGVJSPfT0dH6QrJfKw5FSQznxyJx"
+
+        val config = TwitterConfig.Builder(this)
+                .logger(DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(TwitterAuthConfig(CONSUMER_KEY, CONSUMER_SECRET))
+                .debug(true)
+                .build()
+
+        Twitter.initialize(config)
+
         setContentView(R.layout.activity_main)
 
         setUpViews()
