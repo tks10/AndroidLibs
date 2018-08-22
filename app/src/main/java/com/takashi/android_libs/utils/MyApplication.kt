@@ -10,8 +10,8 @@ import com.twitter.sdk.android.core.TwitterConfig
 class MyApplication : Application() {
 
     companion object {
-        private val CONSUMER_KEY = "H6NT0hh2n4rFJK1TNGjU6Q"
-        private val CONSUMER_SECRET = "XgmyI4vkNpv17eGVJSPfT0dH6QrJfKw5FSQznxyJx"
+        private val CONSUMER_KEY = ""
+        private val CONSUMER_SECRET = ""
     }
 
     override fun onCreate() {
